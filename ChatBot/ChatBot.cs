@@ -40,7 +40,7 @@ namespace ChatBot
             }
 
             if (splitted[_closePosition] == "N/D"){
-                log.LogError("Stock code is not valid", _symbol);
+                log.LogError($"Stock code is not valid", _symbol);
                 return new BadRequestResult();
             }
 

@@ -19,7 +19,7 @@ namespace SignalRChat.Hubs
 
         public ChatHub(IDictionary<string, UserConnection> connections)
         {
-            _botUser = "MyChat Bot";            
+            _botUser = "MyChat Bot";
             _connections = connections;
         }
 
@@ -59,7 +59,11 @@ namespace SignalRChat.Hubs
                     HttpRequestMessage newRequest = new HttpRequestMessage(HttpMethod.Get, $"{ChatBotURL}ChatBot?stockName={stockCode}");
                     HttpResponseMessage response = await newClient.SendAsync(newRequest);
                     var parsedCSV = await response.Content.ReadAsStringAsync();
-                    await Clients.Group(userConnection.Room).SendAsync("ReceiveMessage", _botUser, $"{parsedCSV}");
+
+                    if (string.IsNullOrEmpty(parsedCSV))
+                    {
+                        await Clients.Group(userConnection.Room).SendAsync("ReceiveMessage", _botUser, $"{$"Stock code is not valid. StockCode = {stockCode}"}");
+                    }else await Clients.Group(userConnection.Room).SendAsync("ReceiveMessage", _botUser, $"{parsedCSV}");
                 }
             }
         }
@@ -72,7 +76,7 @@ namespace SignalRChat.Hubs
 
             return Clients.Group(room).SendAsync("UsersInRoom", users);
         }
-        
+
         private bool IsvalidCommand(string message)
         {
             return message.StartsWith("/stock=");
