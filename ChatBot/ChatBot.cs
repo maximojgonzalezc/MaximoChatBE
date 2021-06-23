@@ -26,7 +26,7 @@ namespace ChatBot
             _symbol = req.Query["stockName"];
 
             List<string> splitted = new List<string>();
-            string fileList = GetCSV(_symbol);
+            string fileList = await GetCSV(_symbol);
             string[] tempStr;
 
             tempStr = fileList.Split(',');
@@ -38,10 +38,10 @@ namespace ChatBot
                     splitted.Add(item);
                 }
             }
+
             if (splitted[_closePosition] == "N/D"){
                 log.LogError("Stock code is not valid", _symbol);
-                return new OkObjectResult($"Stock code is not valid. StockCode = {_symbol}");
-                throw new Exception("Stock code is not valid. StockCode = {_symbol}");                
+                return new BadRequestResult();
             }
 
             string responseMessage = $"{_symbol.ToUpper()} quote is {splitted[_closePosition]} per share";
@@ -49,12 +49,11 @@ namespace ChatBot
             return new OkObjectResult(responseMessage);
         }
 
-        public static string GetCSV(string symbol)
+        public async static Task<string> GetCSV(string symbol)
         {
             var url = Environment.GetEnvironmentVariable("StockAPIURLBeginning") + symbol + Environment.GetEnvironmentVariable("StockAPIURLEnding");
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-            HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
-
+            var resp = await req.GetResponseAsync();
             StreamReader sr = new StreamReader(resp.GetResponseStream());
             string results = sr.ReadToEnd();
             sr.Close();
