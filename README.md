@@ -2,7 +2,7 @@
 Hello jobSity tester!
 Here you will find the back end for my chat web app
 
-In order to run it you need the .Net 5.0 runtime => https://dotnet.microsoft.com/download or install the SDK.
+In order to run it you need the .NET 5.0 & .NET Core 3.1 SDKs (or just runtimes) => https://dotnet.microsoft.com/download or install the SDK.
 
 Then:
 
